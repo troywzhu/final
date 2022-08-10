@@ -1,224 +1,296 @@
+// Global Variable to append bar div elements
 var barContainer = document.querySelector("#bar_container");
-var barLength = 100;
-var height = 2;
+
+// Will hold a collection of div elements
 var bars;
-var barArray = [] 
-var numberOfSteps;
+
+// Array to track the number values in our array
+var barArray = []
+
+// The number of bars in our array
+var barLength = 250;
+
+// Factor to generate height style of bars
+var height = 2;
+
+// Variable to truck number of operations in each algorithm
+var operations = 0;
+
+// Variable to place output message in the footer
+var message = document.querySelector("footer");
+
 
 
 // Function changes height style and data attributes
-function ChangeHeight(bar, data){
+function ChangeHeight(bar, data) {
 
-  // Sets the data attribute of the div 
-  bar.setAttribute("data", data);
+    // Sets the data attribute of the div
+    bar.setAttribute("data", data);
 
-  // Sets the height style of the div 
-  bar.style.height = data * height + "px";
+    // Sets the height style of the div
+    bar.style.height = data * height + "px";
 }
 
-// Function to populate unsorted array 
-function CreateArray() {
+// Function to populate unsorted array
+function CreateNewArray() {
 
-  // Clear the current contents of the div
-  barContainer.innerHTML = "";
+    // Clear current array
+    barArray = []
 
-  // Iterate over each bar in the array
-  for (let i = 0; i < barLength; i++) {
+    // Clear the current contents of the div
+    barContainer.innerHTML = "";
 
-    // Create a new bar div and assign its class
-	  let bar = document.createElement("div")
-    bar.setAttribute("class", "bar");
+    // Iterate over each bar in the array
+    for (let i = 0; i < barLength; i++) {
 
-    let number = Math.floor(Math.random() * 100 + 1)
+        // Create a new bar div and assign its class
+        let bar = document.createElement("div")
+        bar.setAttribute("class", "bar");
 
-    // Randomly assign a height and value to the bar
-    ChangeHeight(bar, number)
+        // Create a random number value
+        let number = Math.floor(Math.random() * 100 + 1)
 
-    // Populate the array to store data for later use
-    barArray.push(number)
+        // Assign height and data value to bar
+        ChangeHeight(bar, number)
 
-    // Add the bar to the bar container 
-	  barContainer.appendChild(bar);
-	}
+        // Populate the array to store data for later use
+        barArray.push(number)
 
-  // Create array of all bars and add to global variable 
-  bars = document.querySelectorAll(".bar");
+        // Add the bar to the bar container
+        barContainer.appendChild(bar);
+    }
+
+    // Create array of all bars and add to global variable
+    bars = document.querySelectorAll(".bar");
 }
-
 
 // Call function at the start of the app
-CreateArray();
+CreateNewArray();
 
 
-// Function to swap the values of 2 bars 
-function Swap(bar1, bar2) {
-  
-      // Create temporary variable to swap the data 
-      let temp = bar1.getAttribute("data");
+// Recreates the array to maintain current dataset
+function RecreateCurrentArray() {
 
-      // Use helper function to swap the data 
-      ChangeHeight(bar1, bar2.getAttribute("data"));
-      ChangeHeight(bar2, temp);
+    // Clear contents of current container
+    barContainer.innerHTML = "";
 
+    // Iterate over the present bar array
+    for (let i = 0; i < barLength; i++) {
+
+        // Create a new bar div and assign its class
+        let bar = document.createElement("div")
+        bar.setAttribute("class", "bar");
+
+        // Assign height and data value to bar
+        ChangeHeight(bar, barArray[i])
+
+        // Populate the array to store data for later use
+        barContainer.appendChild(bar);
+
+    }
+    // Create array of all bars and add to global variable
+    bars = document.querySelectorAll(".bar");
 }
 
+
+
+
+// Function to swap the values of 2 bars
+function Swap(bar1, bar2) {
+
+    // Create temporary variable to swap the data
+    let temp = bar1.getAttribute("data");
+
+    // Use helper function to swap the data
+    ChangeHeight(bar1, bar2.getAttribute("data"));
+    ChangeHeight(bar2, temp);
+
+}
 
 // Selection Sort Algorithm
 async function SelectionSort() {
 
+    // Use an array maintaing the current dataset
+    RecreateCurrentArray();
+
+    // Track number of operations
+    operations = 0;
+
+    // Clear the output field
+    message.innerHTML = "";
+
+    // Iterate over the array
     for (let i = 0; i < barLength; i++) {
-    
-      // Assign i as the minimum value 
-      let min = i;
 
-      for (let j = i + 1; j < barLength; j++) {
-    
-        // Provide grey color to the jth bar
-        bars[j].style.backgroundColor = "grey";
-          
-       // To pause the execution of code for 1 milliseconds
-       await new Promise((resolve) =>
-       setTimeout(() => {
-         resolve();
-       }, 1)
-     );
-    
-        // Check for a number smaller than current min
-        if (Number(bars[min].getAttribute("data")) > Number(bars[j].getAttribute("data"))) 
-        {
-          if (min !== i) 
-          {
-    
-            // Provide skyblue color to the (min-idx)th bar
-            bars[min].style.backgroundColor = "red";
-          }
+        // Assign current index as min value
+        let min = i;
 
-          min = j;
-        } 
-        
-        else {
-    
-          // Provide skyblue color to the jth bar
-          bars[j].style.backgroundColor = "aqua";
-        }
-      }
-    
-      // To pause the execution of code for 300 milliseconds
-      // await new Promise((resolve) =>
-      //   setTimeout(() => {
-      //     resolve();
-      //   }, 1)
-      // );
-    
-      Swap(bars[i], bars[min])
+        // Iterate over the rest of the array beyond i
+        for (let j = i + 1; j < barLength; j++) {
 
-      // Provide skyblue color to the (min-idx)th bar
-      bars[min].style.backgroundColor = "red";
-    
-      // Provide lightgreen color to the ith bar
-      bars[i].style.backgroundColor = "lime";
-    }
-  }
-
-
-// Asynchronous BubbleSort function
-async function BubbleSort() {
-
-
-    // BubbleSort Algorithm
-    for (let i = 0; i < barLength; i++) {
-        for (let j = 0; j < barLength - i - 1; j++) {
-  
-            // To change background-color of the
-            // blocks to be compared
+            // Bars turn grey to visualize searching the array
             bars[j].style.backgroundColor = "grey";
-            bars[j + 1].style.backgroundColor = "grey";
-  
-            // To wait for .1 sec
-            await new Promise((resolve) =>
-                setTimeout(() => {
-                    resolve();
-                }, )
-            );
-  
-            // To compare value of two blocks
-            if (Number(bars[j].getAttribute("data")) > 
-            Number(bars[j + 1].getAttribute("data"))) {
-                Swap(bars[j], bars[j + 1]);
+
+            // Check if current position is smaller than the min
+            if (Number(bars[j].getAttribute("data")) < Number(bars[min].getAttribute("data"))) {
+
+                // Increase count for greater value comparison
+                operations++;
+
+                // Sleep function to animate searching
+                // https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+                await new Promise(r => setTimeout(r, 1));
+
+                // Revert previous minimum color
+                bars[min].style.backgroundColor = "aqua";
+                min = j;
+                operations++;
+
+                // Assign new min bar to green
+                bars[min].style.backgroundColor = "lime";
+
             }
-  
-            // Changing the color to the previous one
+
+            // Change the color back at the end of the loop
             bars[j].style.backgroundColor = "aqua";
-            bars[j + 1].style.backgroundColor = "aqua";
+
+            // Increase operation count for end of loop
+            operations++;
         }
-  
-        //changing the color of greatest element 
-        //found in the above traversal
-        bars[barLength - i - 1].style.backgroundColor = "lime";
+
+        // After the loop, if min is not index bar
+        // Turn min bar green and swap with index bar
+        // Increase operation count for swap
+        if (min !== i) {
+            Swap(bars[i], bars[min])
+            bars[min].style.backgroundColor = "lime";
+            operations++;
+        }
+
+        // Turn the sorted bar green
+        bars[i].style.backgroundColor = "lime";
+
+        // Increase operation count for end of loop
+        // Output operation count to user
+        operations++;
+        message.innerHTML = "Selection Sort:<p>" + operations + " Operations</p>";
     }
 }
 
+// SelectionSort();
+
+// BubbleSort Algorithm
+async function BubbleSort() {
+
+    // Use an array maintaining the current dataset
+    RecreateCurrentArray()
+
+    operations = 0;
+    message.innerHTML = "";
+
+    // Iterate through the bars array
+    for (let i = 0; i < barLength; i++) {
+        for (let j = 0; j < barLength - i - 1; j++) {
+
+            // Change colors of blocks being compared
+            bars[j].style.backgroundColor = "lightgrey";
+            bars[j + 1].style.backgroundColor = "grey";
 
 
-// Asynchronous function to perform "Insertion Sort"
+            // Compare the height values of two bars
+            if (Number(bars[j].getAttribute("data")) >
+                Number(bars[j + 1].getAttribute("data"))) {
+
+                // Operation for greater than check
+                operations++
+
+                // Sleep to visualize array animation
+                await new Promise(r => setTimeout(r, 1));
+                bars[j].style.backgroundColor = bars[j + 1].style.backgroundColor
+
+                // The larger bar is swapped towards the right
+                Swap(bars[j], bars[j + 1]);
+                operations++;
+            }
+
+
+            // Revert colors after comparison complete
+            bars[j].style.backgroundColor = "aqua";
+            bars[j + 1].style.backgroundColor = "aqua";
+
+            // Increase operation count for end of loop
+            operations++;
+        }
+
+        // Once correctly sorted, turn color green
+        bars[barLength - i - 1].style.backgroundColor = "lime";
+
+        // Increase operation count for end of loop
+        // Output operation count
+        operations++;
+        message.innerHTML = "Bubble Sort:<p>" + operations + " Operations</p>";
+    }
+}
+
+// Insertion Sort Algorithm
 async function InsertionSort() {
 
+    // Generate same array to preserve dataset
+    RecreateCurrentArray()
+
+    operations = 0;
+    message.innerHTML = "";
+
     for (let i = 1; i < barLength; i++) {
-    
-      // To store the integer value of ith bar to key 
-      let current = Number(bars[i].getAttribute("data"));
 
-      // Assign i-1 to j
-      let j = i - 1;
-  
-      // To pause the execution of code for 600 milliseconds
-      await new Promise((resolve) =>
-      setTimeout(() => {
-        resolve();
-      }, 10)
-    );
-    
-      // For placing selected element at its correct position 
+        // Store value of current bar
+        let current = Number(bars[i].getAttribute("data"));
+        operations++;
 
-      let jBarData;
+        let j = i - 1;
+        operations++;
 
-      while ((j > -1) && (current < (jBarData = Number(bars[j].getAttribute("data"))))) {
-          
-        // Provide darkblue color to the jth bar
-        bars[j].style.backgroundColor = "grey";
-          
-        // For placing jth element over (j+1)th element
-        ChangeHeight(bars[j + 1], jBarData);
+        let jBarData;
 
-    
-        // To pause the execution of code for 600 milliseconds
-        await new Promise((resolve) =>
-          setTimeout(() => {
-            resolve();
-          }, 50)
-        );
 
-        bars[j].style.backgroundColor = "lime";
+        while ((j > -1) && (current < (jBarData = Number(bars[j].getAttribute("data"))))) {
 
-        // Assign j-1 to j
-        j -= 1;
-      }
-    
-      // Placing the selected element to its correct position
-      ChangeHeight(bars[j + 1], current);
 
-         
-      // To pause the execution of code for 600 milliseconds
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          resolve();
-        }, 10)
-      );
+            // Change color to grey and sleep to visualize sorting animation
+            bars[j].style.backgroundColor = "grey";
+            await new Promise(r => setTimeout(r, 1));
 
+            // Adjust height
+            ChangeHeight(bars[j + 1], jBarData);
+            operations++;
+
+            bars[j + 1].style.backgroundColor = "lime";
+
+            j--;
+            operations++;
+
+            // Increase operation count for end of loop
+            operations++;
+        }
+        bars[j + 1].style.backgroundColor = "lime";
+
+        // Adjust the height of the element
+        ChangeHeight(bars[j + 1], current);
+        operations++;
+
+        // Increase operation count for end of loop
+        operations++;
+
+        // Output operation count
+        message.innerHTML = "Insertion Sort:<p>" + operations + " Operations</p>";
     }
-  }
 
-  document.querySelector("#create-new-array").addEventListener("click", CreateArray);
-  document.querySelector("#bubble-sort").addEventListener("click", BubbleSort);
-  document.querySelector("#selection-sort").addEventListener("click", SelectionSort);
-  document.querySelector("#insertion-sort").addEventListener("click", InsertionSort);
+}
+
+
+// Bind sorting algorithms to HTML buttons with onlick events
+
+document.querySelector("#create-new-array").addEventListener("click", CreateNewArray);
+document.querySelector("#bubble-sort").addEventListener("click", BubbleSort);
+document.querySelector("#selection-sort").addEventListener("click", SelectionSort);
+document.querySelector("#insertion-sort").addEventListener("click", InsertionSort);
